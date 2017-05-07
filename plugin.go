@@ -18,6 +18,7 @@ type (
 	Config struct {
 		Remote      Remote
 		Plan        bool
+		Init        bool
 		Vars        map[string]string
 		Secrets     map[string]string
 		Cacert      string
@@ -55,10 +56,11 @@ func (p Plugin) Exec() error {
 	}
 	if remote.Backend != "" {
 		commands = append(commands, deleteCache())
-		commands = append(commands, remoteConfigCommand(remote))
+		//commands = append(commands, initCommand(remote))
 	}
 	commands = append(commands, getModules())
 	commands = append(commands, validateCommand())
+	commands = append(commands, initCommand(remote))
 	commands = append(commands, planCommand(p.Config.Vars, p.Config.Secrets, p.Config.Parallelism, p.Config.Targets))
 	if !p.Config.Plan {
 		commands = append(commands, applyCommand(p.Config.Parallelism, p.Config.Targets))
@@ -114,11 +116,10 @@ func deleteCache() *exec.Cmd {
 	)
 }
 
-func remoteConfigCommand(config Remote) *exec.Cmd {
+func initCommand(config Remote) *exec.Cmd {
 	args := []string{
-		"remote",
-		"config",
-		fmt.Sprintf("-backend=%s", config.Backend),
+		"init",
+		//fmt.Sprintf("-backend=%s", config.Backend),
 	}
 	for k, v := range config.Config {
 		args = append(args, fmt.Sprintf("-backend-config=%s=%s", k, v))

@@ -33,6 +33,11 @@ func main() {
 			Usage:  "contains the configuration for the Terraform remote state tracking",
 			EnvVar: "PLUGIN_REMOTE",
 		},
+		cli.BoolFlag{
+			Name:   "init",
+			Usage:  "initalize the configuration for the Terraform remote state backend",
+			EnvVar: "PLUGIN_INIT",
+		},
 		cli.StringFlag{
 			Name:   "vars",
 			Usage:  "a map of variables to pass to the Terraform `plan` and `apply` commands. Each value is passed as a `<key>=<value>` option",
@@ -115,6 +120,7 @@ func run(c *cli.Context) error {
 		Config: Config{
 			Remote:      remote,
 			Plan:        c.Bool("plan"),
+			Init:        c.Bool("init"),
 			Vars:        vars,
 			Secrets:     secrets,
 			Cacert:      c.String("ca_cert"),
